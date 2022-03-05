@@ -1,56 +1,30 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [counter, setValue] = useState(0);
-  const [keyword, setKeyword] = useState("");
-  const [showing, setShowing] = useState(false);
-
-  const onClick = () => setValue((prev) => prev + 1);
-  const onChange = (event) => setKeyword(event.target.value);
-  const onShow = () => setShowing((prev) => !prev);
-
-  function Hello() {
-    useEffect(() => {
-      console.log("hi :)");
-      return () => console.log("bye :(");
-    }, []);
-    return <h1>Hello</h1>;
-  }
+  const [loading, setLoading] = useState(true);
+  const [coins, setCoins] = useState([]);
 
   useEffect(() => {
-    console.log("I run only once.");
+    fetch("https://api.coinpaprika.com/v1/tickers")
+    .then((response) => response.json())
+    .then((json) => {
+      setCoins(json);
+      setLoading(false);
+    });
   }, []);
 
-  useEffect(() => {
-    if (counter !== "" && keyword.length > 0) {
-      console.log("I run when 'counter' changes");
-    }
-  }, [counter]);
-
-  useEffect(() => {
-    if (keyword !== "" && keyword.length > 0) {
-      console.log("I run when 'keyword' changes");
-    }
-  }, [keyword]);
-
-  useEffect(() => {
-    console.log("I run when 'keyword' & 'counter' changes");
-  }, [keyword, counter]);
-
   return (
-    <div>
-      <input
-        value={keyword}
-        onChange={onChange}
-        type="text"
-        placeholder="Search here..."
-      />
-      <h1>{counter}</h1>
-      <button onClick={onClick}>click me</button>
-      <hr />
-      <button onClick={onShow}>{showing ? "Hide" : "Show"}</button>
-      {showing ? <Hello /> : null}
-    </div>
+  <div>
+    <h1>The Coins 🪙 {loading ? "" :  `(${coins.length})`}</h1>
+    {loading ? <strong>Loading...</strong> : null}
+    <ul>
+      {coins.map((coin) => ( 
+      <li>
+        {coin.name} ({coin.symbol}): ${coin.quotes.USD.price} USD
+      </li>
+      ))}
+    </ul>
+  </div>
   );
 }
 
