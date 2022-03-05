@@ -1,55 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 function App() {
-  const [counter, setValue] = useState(0);
-  const [keyword, setKeyword] = useState("");
-  const [showing, setShowing] = useState(false);
+  const [toDo, setToDo] = useState("");
+  const [toDos, setToDos] = useState([]);
 
-  const onClick = () => setValue((prev) => prev + 1);
-  const onChange = (event) => setKeyword(event.target.value);
-  const onShow = () => setShowing((prev) => !prev);
-
-  function Hello() {
-    useEffect(() => {
-      console.log("hi :)");
-      return () => console.log("bye :(");
-    }, []);
-    return <h1>Hello</h1>;
-  }
-
-  useEffect(() => {
-    console.log("I run only once.");
-  }, []);
-
-  useEffect(() => {
-    if (counter !== "" && keyword.length > 0) {
-      console.log("I run when 'counter' changes");
+  const onChange = (event) => setToDo(event.target.value);
+  const onSubmit = (event) => {
+    event.preventDefault();
+    if (toDo === "") {
+      return;
     }
-  }, [counter]);
-
-  useEffect(() => {
-    if (keyword !== "" && keyword.length > 0) {
-      console.log("I run when 'keyword' changes");
-    }
-  }, [keyword]);
-
-  useEffect(() => {
-    console.log("I run when 'keyword' & 'counter' changes");
-  }, [keyword, counter]);
+    setToDo("");
+    setToDos((currentArray) => [toDo, ...currentArray]);
+  };
 
   return (
     <div>
-      <input
-        value={keyword}
-        onChange={onChange}
-        type="text"
-        placeholder="Search here..."
-      />
-      <h1>{counter}</h1>
-      <button onClick={onClick}>click me</button>
+      <h1>My To Do ({toDos.length})</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          onChange={onChange}
+          value={toDo}
+          type="text"
+          placeholder="Write your to do..."
+        />
+        <button type="submit">Add To Do</button>
+      </form>
       <hr />
-      <button onClick={onShow}>{showing ? "Hide" : "Show"}</button>
-      {showing ? <Hello /> : null}
+      <ul>
+        {toDos.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }
